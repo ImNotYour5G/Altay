@@ -43,6 +43,7 @@ use pocketmine\entity\hostile\Spider;
 use pocketmine\entity\hostile\Stray;
 use pocketmine\entity\hostile\Zombie;
 use pocketmine\entity\object\ArmorStand;
+use pocketmine\entity\object\EnderCrystal;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\entity\object\FireworksRocket;
@@ -83,6 +84,7 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
+use pocketmine\level\sound\PlaySound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
@@ -101,6 +103,7 @@ use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\SetActorDataPacket;
 use pocketmine\network\mcpe\protocol\SetActorLinkPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
+use pocketmine\network\mcpe\protocol\StopSoundPacket;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\Player;
@@ -407,6 +410,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(FireworksRocket::class, false, ['FireworksRocket', 'minecraft:fireworks_rocket']);
 		Entity::registerEntity(Slime::class, false, ['Slime', 'minecraft:slime']);
 		Entity::registerEntity(MagmaCube::class, false, ['MagmaCube', 'minecraft:magma_cube']);
+		Entity::registerEntity(EnderCrystal::class, false, ['EnderCrystal', 'minecraft:ender_crystal']);
 
 		Entity::registerEntity(Human::class, true);
 
@@ -840,11 +844,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function getRidingEntity() : ?Entity{
-		if($this->ridingEid !== null){
-			return $this->server->findEntity($this->ridingEid);
-		}else{
-			return null;
-		}
+		return $this->ridingEid !== null ? $this->server->findEntity($this->ridingEid) : null;
 	}
 
 	public function setRidingEntity(?Entity $ridingEntity = null) : void{
@@ -856,11 +856,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function getRiddenByEntity() : ?Entity{
-		if($this->riddenByEid !== null){
-			return $this->server->findEntity($this->riddenByEid);
-		}else{
-			return null;
-		}
+		return $this->riddenByEid !== null ? $this->server->findEntity($this->riddenByEid) : null;
 	}
 
 	public function setRiddenByEntity(?Entity $riddenByEntity = null) : void{
@@ -1620,8 +1616,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->motion->y -= $this->gravity;
 	}
 
+	protected function getDefaultDrag() : float{
+		return 0.09;
+	}
+
 	protected function tryChangeMovement() : void{
-		$friction = 0.91;
+		$friction = 1 - $this->getDefaultDrag();
 
 		if($this->applyDragBeforeGravity()){
 			$this->motion->y *= $friction;
@@ -1913,9 +1913,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function mountEntity(Entity $entity, int $seatNumber = 0) : bool{
-		if($this->getRidingEntity() == null and $entity !== $this and count($entity->passengers) < $entity->getSeatCount()){
+		if($this->getRidingEntity() === null and $entity !== $this and count($entity->passengers) < $entity->getSeatCount()){
 			if(!isset($entity->passengers[$seatNumber])){
-
 				if($seatNumber === 0){
 					$entity->setRiddenByEntity($this);
 
@@ -1976,9 +1975,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		if($this->getRidingEntity() !== null){
 			$entity = $this->getRidingEntity();
 
-			unset($entity->passengers[array_search($this->getId(), $entity->passengers, true)]);
+			unset($entity->passengers[$this->propertyManager->getByte(self::DATA_CONTROLLING_RIDER_SEAT_NUMBER)]);
 
-			if($this->isRiding()){
+			if($entity->getRiddenByEntity() === $this){
 				$entity->setRiddenByEntity(null);
 
 				$this->entityRiderYawDelta = 0;
@@ -2532,6 +2531,29 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->motion->x += $x;
 		$this->motion->y += $y;
 		$this->motion->z += $z;
+	}
+
+	/**
+	 * @param string     $sound
+	 * @param float      $volume
+	 * @param float      $pitch
+	 * @param array|null $targets
+	 */
+	public function playSound(string $sound, float $volume = 1.0, float $pitch = 1.0, array $targets = null) : void{
+		$this->level->addSound(new PlaySound($this, $sound, $volume, $pitch), $targets ?? null);
+	}
+
+	/**
+	 * @param string     $sound
+	 * @param bool       $stopAll
+	 * @param array|null $targets
+	 */
+	public function stopSound(string $sound, bool $stopAll = false, array $targets = null) : void{
+		$pk = new StopSoundPacket();
+		$pk->soundName = $sound;
+		$pk->stopAll = $stopAll;
+
+		$this->server->broadcastPacket($targets ?? $this->level->getViewersForPosition($this), $pk);
 	}
 
 	public function isOnGround() : bool{
