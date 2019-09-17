@@ -38,9 +38,9 @@ use function implode;
 class SayCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		parent::__construct($name, "%pocketmine.command.say.description", "%commands.say.usage", [], [
+		parent::__construct($name, TextFormat::YELLOW . "/say <Nachricht>", "%commands.say.usage", [], [
 			[
-				new CommandParameter("message", AvailableCommandsPacket::ARG_TYPE_MESSAGE, false)
+				new CommandParameter("Nachricht", AvailableCommandsPacket::ARG_TYPE_MESSAGE, false)
 			]
 		]);
 		$this->setPermission("pocketmine.command.say");

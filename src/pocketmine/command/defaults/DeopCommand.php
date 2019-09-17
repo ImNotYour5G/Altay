@@ -40,7 +40,7 @@ class DeopCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct($name, "%pocketmine.command.deop.description", "%commands.deop.usage", [], [
 			[
-				new CommandParameter("player", AvailableCommandsPacket::ARG_TYPE_TARGET, false)
+				new CommandParameter("Spieler", AvailableCommandsPacket::ARG_TYPE_TARGET, false)
 			]
 		]);
 		$this->setPermission("pocketmine.command.op.take");

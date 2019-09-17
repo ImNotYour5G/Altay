@@ -35,10 +35,10 @@ use pocketmine\utils\TextFormat;
 class XpCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		parent::__construct($name, "%altay.command.xp.description", 'altay.command.xp.usage', [], [
+		parent::__construct($name, TextFormat::YELLOW . "/xp <Anzahl> <Spieler>", 'altay.command.xp.usage', [], [
 			[
-				new CommandParameter("amount", AvailableCommandsPacket::ARG_TYPE_INT, false),
-				new CommandParameter("player", AvailableCommandsPacket::ARG_TYPE_TARGET)
+				new CommandParameter("Anzahl", AvailableCommandsPacket::ARG_TYPE_INT, false),
+				new CommandParameter("Spieler", AvailableCommandsPacket::ARG_TYPE_TARGET)
 			]
 		]);
 

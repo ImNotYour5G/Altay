@@ -42,40 +42,20 @@ use function round;
 class TeleportCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		parent::__construct($name, "%pocketmine.command.tp.description", "%commands.tp.usage", ["teleport"]);
+		parent::__construct($name, TextFormat::YELLOW . "/tp <Spieler>", "%commands.tp.usage", []);
 		$this->setPermission("pocketmine.command.teleport");
 
-		$destination = new CommandParameter("destination", AvailableCommandsPacket::ARG_TYPE_POSITION, false);
-		$targetDestination = new CommandParameter("destination", AvailableCommandsPacket::ARG_TYPE_TARGET, false);
-		$victim = new CommandParameter("victim", AvailableCommandsPacket::ARG_TYPE_TARGET, false);
-		$yRot = new CommandParameter("yRot", AvailableCommandsPacket::ARG_TYPE_VALUE);
-		$xRot = new CommandParameter("xRot", AvailableCommandsPacket::ARG_TYPE_VALUE);
-		$facing = new CommandParameter("facing", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("facing", ["facing"]));
-		$lookAtPosition = new CommandParameter("lookAtPosition", AvailableCommandsPacket::ARG_TYPE_POSITION, false);
-		$lookAtEntity = new CommandParameter("lookAtEntity", AvailableCommandsPacket::ARG_TYPE_TARGET, false);
-
 		$this->setParameters([
-			$destination, $yRot, $xRot
+			new CommandParameter("Koordinaten", AvailableCommandsPacket::ARG_TYPE_POSITION, false)
 		], 0);
 		$this->setParameters([
-			$destination, $facing, $lookAtPosition
+			new CommandParameter("Spieler", AvailableCommandsPacket::ARG_TYPE_TARGET, false)
+
 		], 1);
 		$this->setParameters([
-			$destination, $facing, $lookAtEntity
+			new CommandParameter("Spieler", AvailableCommandsPacket::ARG_TYPE_TARGET, false), 
+			new CommandParameter("Spieler", AvailableCommandsPacket::ARG_TYPE_TARGET, false)
 		], 2);
-		$this->setParameters([
-			$victim, $destination, $yRot, $xRot
-		], 3);
-		$this->setParameters([
-			$victim, $destination, $facing, $lookAtPosition
-		], 4);
-		$this->setParameters([
-			$victim, $destination, $facing, $lookAtEntity
-		], 5);
-		$this->setParameters([$targetDestination], 6);
-		$this->setParameters([
-			$victim, $targetDestination
-		], 7);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

@@ -26,14 +26,17 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\utils\TextFormat;
 
 class StopCommand extends VanillaCommand{
 
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.stop.description",
-			"%commands.stop.usage"
+			TextFormat::YELLOW . "/stop",
+			"%commands.stop.usage", 
+			[], 
+			[[]]
 		);
 		$this->setPermission("pocketmine.command.stop");
 	}

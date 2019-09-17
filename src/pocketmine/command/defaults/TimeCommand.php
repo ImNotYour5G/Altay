@@ -42,28 +42,21 @@ class TimeCommand extends VanillaCommand{
 		parent::__construct($name, "%pocketmine.command.time.description", "%pocketmine.command.time.usage");
 		$this->setPermission("pocketmine.command.time.add;pocketmine.command.time.set;pocketmine.command.time.start;pocketmine.command.time.stop");
 
-		$amount = new CommandParameter("amount", AvailableCommandsPacket::ARG_TYPE_INT);
+		$amount = new CommandParameter("Anzahl", AvailableCommandsPacket::ARG_TYPE_INT);
 		$set = new CommandParameter("set", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("set", ["set"]));
 
 		$this->setParameters([
 			new CommandParameter("add", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("add", ["add"])),
-			$amount
+			new CommandParameter("Anzahl", AvailableCommandsPacket::ARG_TYPE_INT)
 		], 0);
 		$this->setParameters([
-			$set, $amount
+			new CommandParameter("set", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("set", ["set"])),
+			new CommandParameter("Anzahl", AvailableCommandsPacket::ARG_TYPE_INT)
 		], 1);
 		$this->setParameters([
-			$set,
-			new CommandParameter("time", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("time", [
-				"day", "sunrise", "noon", "sunset", "night", "midnight"
-			]))
+			new CommandParameter("set", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("set", ["set"])),
+			new CommandParameter("Zeit", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("time", ["day", "sunrise", "noon", "sunset", "night", "midnight"]))
 		], 2);
-		$this->setParameters([
-			new CommandParameter("querySE", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("query", ["query"])),
-			new CommandParameter("query", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("queryTime", [
-				"day", "sunrise", "noon", "sunset", "night", "midnight"
-			]))
-		], 3);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -93,21 +86,7 @@ class TimeCommand extends VanillaCommand{
 			}
 			Command::broadcastCommandMessage($sender, "Stopped the time");
 			return true;
-		}elseif($args[0] === "query"){
-			if(!$sender->hasPermission("pocketmine.command.time.query")){
-				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
-
-				return true;
-			}
-			if($sender instanceof Player){
-				$level = $sender->getLevel();
-			}else{
-				$level = $sender->getServer()->getDefaultLevel();
-			}
-			$sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.time.query", [$level->getTime()]));
-			return true;
 		}
-
 
 		if(count($args) < 2){
 			throw new InvalidCommandSyntaxException();

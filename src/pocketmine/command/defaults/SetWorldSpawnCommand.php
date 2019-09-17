@@ -39,10 +39,7 @@ use function round;
 class SetWorldSpawnCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		parent::__construct($name, "%pocketmine.command.setworldspawn.description", "%commands.setworldspawn.usage", [], [
-			[
-				new CommandParameter("spawnPoint", AvailableCommandsPacket::ARG_TYPE_POSITION)
-			]
+		parent::__construct($name, TextFormat::YELLOW . "/setworldspawn", "%commands.setworldspawn.usage", [], [
 		]);
 		$this->setPermission("pocketmine.command.setworldspawn");
 	}

@@ -37,8 +37,10 @@ class StatusCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.status.description",
-			"%pocketmine.command.status.usage"
+			TextFormat::YELLOW . "/status",
+			"%pocketmine.command.status.usage",
+			[],
+			[[]]
 		);
 		$this->setPermission("pocketmine.command.status");
 	}

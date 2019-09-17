@@ -45,7 +45,7 @@ use function implode;
 class GiveCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		parent::__construct($name, "%pocketmine.command.give.description", "%pocketmine.command.give.usage");
+		parent::__construct($name, TextFormat::YELLOW . "/give <Spieler> <ItemName> <Anzahl>", "%pocketmine.command.give.usage");
 		$this->setPermission("pocketmine.command.give");
 		$itemNames = [];
 
@@ -66,10 +66,9 @@ class GiveCommand extends VanillaCommand{
 		}*/
 
 		$parameters = [
-			new CommandParameter("player", AvailableCommandsPacket::ARG_TYPE_TARGET, false),
-			new CommandParameter("itemName", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("Item", [])),
-			new CommandParameter("amount", AvailableCommandsPacket::ARG_TYPE_INT),
-			new CommandParameter("components", AvailableCommandsPacket::ARG_TYPE_JSON)
+			new CommandParameter("Spieler", AvailableCommandsPacket::ARG_TYPE_TARGET, false),
+			new CommandParameter("ItemName", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("Item", [])),
+			new CommandParameter("Anzahl", AvailableCommandsPacket::ARG_TYPE_INT)
 		];
 		$this->setParameters($parameters, 0);
 	}

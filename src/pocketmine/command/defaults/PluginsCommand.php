@@ -36,9 +36,10 @@ class PluginsCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.plugins.description",
+			TextFormat::YELLOW . "/plugins",
 			"%pocketmine.command.plugins.usage",
-			["pl"]
+			[],
+			[[]]
 		);
 		$this->setPermission("pocketmine.command.plugins");
 	}
